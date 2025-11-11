@@ -57,7 +57,7 @@ jobs:
         RUSTFLAGS: -Copt-level=3 -Ctarget-cpu=nocona
         USE_LTO: 0
       run: |
-        ../configure.sh --build-name=proton-test --enable-ccache --container-engine=docker --without-tts
+        ../configure.sh --build-name=proton-test --enable-ccache --container-engine=docker --without-tts --proton-sdk-image=sherrydck/proton-sdk-llvm-mingw:latest
 
     - name: Make Proton
       working-directory: ./proton/build
