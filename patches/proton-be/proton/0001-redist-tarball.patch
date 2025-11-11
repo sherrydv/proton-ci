@@ -1,0 +1,19 @@
+diff --git a/Makefile.in b/Makefile.in
+index c2195cef..a0dda579 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -1283,7 +1283,10 @@ deploy: all
+ redist: all
+ 	mkdir -p $(REDIST_DIR)
+ 	rsync --delete -arx $(DST_BASE)/ $(REDIST_DIR)
+-
++	mv $(REDIST_DIR) $(BUILD_NAME)
++	XZ_OPT="-9 -T$(J)" tar -cvJf $(BUILD_NAME).tar.xz $(BUILD_NAME)
++	sha512sum $(BUILD_NAME).tar.xz > $(BUILD_NAME).sha512sum
++	@echo "Proton build available at $(BUILD_NAME).tar.xz"
+ 
+ ##
+ ## make module=$dllname module[32,64]
+-- 
+2.51.2
+

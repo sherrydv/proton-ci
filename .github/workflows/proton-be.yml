@@ -1,0 +1,79 @@
+name: Proton BE CI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Debloat GitHub CI
+      uses: endersonmenezes/free-disk-space@v2
+      with:
+        remove_android: true
+        remove_dotnet: true
+        remove_haskell: true
+    
+    - name: Prepare host
+      run: sudo apt update && sudo apt-get install -y ccache fontforge-nox
+
+    - name: Restore cache
+      id: ccache-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/.ccache
+        key: ccache-proton-${{ github.run_id }}
+        restore-keys: |
+          ccache-proton-
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+        submodules: false
+    
+    - name: Clone Proton
+      run: |
+        git clone --recurse-submodules https://github.com/ValveSoftware/Proton.git proton --branch=bleeding-edge
+        cd proton
+        git pull
+        # git checkout 
+
+    - name: Patch
+      run: |
+        cd proton
+        ../patches/proton-be/apply.sh
+        mkdir ./build
+    
+    - name: Configure
+      working-directory: ./proton/build
+      env:
+        RUSTFLAGS: -Copt-level=3 -Ctarget-cpu=nocona
+        USE_LTO: 0
+      run: |
+        ../configure.sh --build-name=proton-test --enable-ccache --container-engine=docker --without-tts
+
+    - name: Make Proton
+      working-directory: ./proton/build
+      run: |
+        make -j$(nproc) redist
+
+    - name: Save cache
+      id: ccache-save
+      if: always()
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.ccache
+        key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
+
+    - name: Upload Proton
+      uses: actions/upload-artifact@v4
+      with:
+        name: proton-test.tar.xz
+        path: ./proton/build/proton-test.tar.xz
