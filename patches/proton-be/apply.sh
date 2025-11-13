@@ -17,6 +17,9 @@ fi
 
 cd wine || exit 1
 
+# Reset to certain commit
+git checkout 969de296fed981565ee989f5971d94bba3330696
+
 if [ -d "$here/wine" ] && [ "$(ls -A "$here/wine")" ]; then
     mapfile -t patches < <(find "$here/wine" -type f -name "*.patch" | sort)
     for patch in "${patches[@]}"; do
