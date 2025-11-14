@@ -1,0 +1,13 @@
+diff --git a/Makefile.in b/Makefile.in
+index 43325a57..59a63144 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -566,7 +566,7 @@ $(eval $(call rules-cmake,vosk,aarch64,unix))
+ ##
+ 
+ # HACK: glib 2.0 in the runtime is old and causes a lot of errors with a newer GCC
+-WINE_CFLAGS += -Wno-discarded-qualifiers
++WINE_CFLAGS += -Wno-discarded-qualifiers -Wnoerror=unused-label
+ 
+ WINE_SOURCE_ARGS = \
+   --exclude configure \
