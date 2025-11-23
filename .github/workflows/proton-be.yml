@@ -40,7 +40,7 @@ jobs:
     
     - name: Clone Proton
       run: |
-        git clone --recurse-submodules https://github.com/ValveSoftware/Proton.git proton --branch=bleeding-edge
+        git clone --recurse-submodules https://github.com/ValveSoftware/Proton.git proton --branch=bleeding-edge --proton-sdk-image=registry.gitlab.steamos.cloud/proton/sniper/sdk/arm64:latest
         cd proton
         git pull
         # git checkout 
